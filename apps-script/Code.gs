@@ -6,6 +6,9 @@ const MAX_SUMMARY_CELL_CHARS = 45000;
 const DASHBOARD_HISTORY_LIMIT = 120;
 const DASHBOARD_BACKUP_LIMIT = 30;
 const ACADEMIC_RECORDS_MIGRATION_KEY = "ACADEMIC_RECORDS_MIGRATED_V1";
+const PUBLIC_STUDENTS_CACHE_SECONDS = 1800;
+const PUBLIC_RESULT_CACHE_SECONDS = 300;
+const PUBLIC_CACHE_VERSION = "v2";
 const SHEETS = {
   students: "Estudiantes",
   grades: "Notas",
@@ -195,7 +198,7 @@ function consultStudent(body) {
   const group = String(body.group || body.paralelo || "").trim().toUpperCase();
   if (!ci || !accessCode || !group) throw new Error("Ingrese CI, codigo personal y grupo.");
   const ss = getPublicSpreadsheet(group);
-  const student = readPublicObjects(ss, SHEETS.students).find((row) =>
+  const student = readCachedPublicStudents(ss, group).find((row) =>
     sameCi(row.CI, ci) &&
     sameAccessCode(row.Codigo_Acceso, accessCode) &&
     normalize(row.Paralelo) === normalize(group) &&
@@ -203,11 +206,47 @@ function consultStudent(body) {
   );
   if (!student) throw new Error("CI, codigo personal o grupo incorrecto.");
   const trimester = String(body.trimester || "1").trim();
+  const cache = CacheService.getScriptCache();
+  const resultCacheKey = ["public_result", PUBLIC_CACHE_VERSION, group, student.ID_Estudiante || ci, trimester].join("_");
+  const cachedResult = cache.get(resultCacheKey);
+  if (cachedResult) {
+    try {
+      return JSON.parse(cachedResult);
+    } catch (error) {
+      cache.remove(resultCacheKey);
+    }
+  }
   const grades = buildWorkbookGrades(ss, student, trimester || "1");
-  if (!grades.length) return { student, grades: [], message: "Estudiante encontrado. Todavia no tiene notas registradas en el cuaderno pedagogico." };
+  if (!grades.length) {
+    return cachePublicConsultResult(cache, resultCacheKey, { student, grades: [], message: "Estudiante encontrado. Todavia no tiene notas registradas en el cuaderno pedagogico." });
+  }
   const published = grades.filter((row) => row.Publicado === "Si");
-  if (!published.length) return { student, grades: [], message: "Estudiante encontrado. Sus notas aun no fueron publicadas." };
-  return { student, grades: published, message: "Consulta realizada correctamente." };
+  if (!published.length) {
+    return cachePublicConsultResult(cache, resultCacheKey, { student, grades: [], message: "Estudiante encontrado. Sus notas aun no fueron publicadas." });
+  }
+  return cachePublicConsultResult(cache, resultCacheKey, { student, grades: published, message: "Consulta realizada correctamente." });
+}
+
+function readCachedPublicStudents(ss, group) {
+  const cache = CacheService.getScriptCache();
+  const key = ["public_students", PUBLIC_CACHE_VERSION, group].join("_");
+  const cached = cache.get(key);
+  if (cached) {
+    try {
+      return JSON.parse(cached);
+    } catch (error) {
+      cache.remove(key);
+    }
+  }
+  const students = readPublicObjects(ss, SHEETS.students);
+  cache.put(key, JSON.stringify(students), PUBLIC_STUDENTS_CACHE_SECONDS);
+  return students;
+}
+
+function cachePublicConsultResult(cache, key, result) {
+  const serialized = JSON.stringify(result);
+  if (serialized.length < 95000) cache.put(key, serialized, PUBLIC_RESULT_CACHE_SECONDS);
+  return result;
 }
 
 function diagnosticarConsultaEstudiante() {

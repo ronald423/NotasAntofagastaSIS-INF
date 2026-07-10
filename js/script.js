@@ -1,7 +1,8 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyNTxEDOz40FKN6d4hmZFUcRtEhRd9PGzGnL1nWV-5hIQ12SJDDtfHdHQ7DRH0oUa2J/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwmaaPp9uKbAKpA1UxCnfV9c2ZXXxwtYjJ4h38daO8GucRQ6wsL5J37U4QDzVfKo1Y/exec";
 const API_TIMEOUT = 20000;
 const DEFAULT_LOGO = "assets/img/logo.png";
 const DIMENSION_WEIGHTS = { Ser: 10, Saber: 45, Hacer: 40, Decidir: 5 };
+const PUBLIC_CONFIG_CACHE_MS = 24 * 60 * 60 * 1000;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -56,10 +57,14 @@ function formatApiError(message) {
 
 async function loadPublicSettings() {
   try {
-    const cached = sessionStorage.getItem("publicConfig");
-    if (cached) applyConfig(JSON.parse(cached));
+    const cached = localStorage.getItem("publicConfig");
+    if (cached) {
+      const stored = JSON.parse(cached);
+      if (stored && stored.config) applyConfig(stored.config);
+      if (stored && stored.savedAt && Date.now() - stored.savedAt < PUBLIC_CONFIG_CACHE_MS) return;
+    }
     const { config } = await api("getPublicConfig");
-    sessionStorage.setItem("publicConfig", JSON.stringify(config || {}));
+    localStorage.setItem("publicConfig", JSON.stringify({ config: config || {}, savedAt: Date.now() }));
     applyConfig(config || {});
   } catch (error) {
     console.warn(error.message);
@@ -86,7 +91,6 @@ async function consultGrades(event) {
   const accessCode = $("#accessCode").value.trim();
   const group = $("#consultGroup").value;
   const trimester = $("#consultTrimester").value || "1";
-  const message = $("#message");
   $("#result").hidden = true;
 
   if (!ci || !accessCode || !group) {
