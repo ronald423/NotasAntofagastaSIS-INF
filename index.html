@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consulta de notas</title>
+  <link rel="preload" as="image" href="assets/img/logo.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+  <main class="public-shell">
+    <section class="consult-card">
+      <header class="brand">
+        <div class="brand-logo-wrap">
+          <img id="logo" class="brand-logo" src="assets/img/logo.png" alt="Logo institucional" width="76" height="76" decoding="async">
+        </div>
+        <div class="brand-copy">
+          <p id="gestion" class="eyebrow">Gestion academica</p>
+          <h1 id="schoolName">Unidad Educativa</h1>
+          <p id="welcomeText">Consulta segura de notas y practicas.</p>
+        </div>
+        <div class="secure-chip" title="Consulta protegida">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 2.9 8.4 7 10 4.1-1.6 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Acceso seguro</span>
+        </div>
+      </header>
+
+      <form id="consultForm" class="form-stack" autocomplete="off">
+        <label>
+          <span class="field-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>CI del estudiante</span>
+          <input id="ci" name="ci" type="text" inputmode="numeric" placeholder="Ingrese su CI" required>
+        </label>
+        <label>
+          <span class="field-label"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Codigo personal de acceso</span>
+          <div class="password-field">
+            <input id="accessCode" name="accessCode" type="password" placeholder="Ingrese su codigo" required>
+            <button id="toggleAccessCode" class="password-toggle" type="button" aria-label="Mostrar codigo" title="Mostrar codigo">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <g class="eye-open"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></g>
+                <g class="eye-closed"><path d="M3 15c2.4-2.7 5.4-4 9-4s6.6 1.3 9 4"/><path d="m6 16-1 2M10 14.5 10 18M14 14.5 14 18M18 16l1 2"/></g>
+              </svg>
+            </button>
+          </div>
+        </label>
+        <label>
+          <span class="field-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>Grupo</span>
+          <select id="consultGroup" name="group" required>
+            <option value="">Seleccione grupo</option>
+            <option value="G1">G1</option>
+            <option value="G2">G2</option>
+          </select>
+        </label>
+        <label>
+          <span class="field-label"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Trimestre</span>
+          <select id="consultTrimester" name="trimester" required>
+            <option value="1">1er trimestre</option>
+            <option value="2">2do trimestre</option>
+            <option value="3">3er trimestre</option>
+          </select>
+        </label>
+        <button class="consult-submit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Consultar notas</span><svg class="button-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+
+      <section id="result" class="result-card" hidden>
+        <div class="result-head">
+          <div class="result-identity">
+            <span class="result-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></svg></span>
+            <div>
+            <p class="eyebrow">Resultado academico</p>
+            <h2 id="studentName"></h2>
+            </div>
+          </div>
+          <span id="academicStatus" class="badge"></span>
+        </div>
+        <dl class="student-grid">
+          <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13 14h4"/></svg>CI</dt><dd id="studentCi"></dd></div>
+          <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-5 9 5-9 5-9-5Z"/><path d="M7 13.5V17l5 3 5-3v-3.5"/></svg>Curso</dt><dd id="studentCourse"></dd></div>
+          <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM9 5v14M4 10h16"/></svg>Paralelo</dt><dd id="studentParallel"></dd></div>
+          <div><dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>Materia</dt><dd id="studentSubject"></dd></div>
+        </dl>
+        <div class="public-tabs" role="tablist">
+          <button class="public-tab active" type="button" data-public-tab="ser"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg><span>Ser <small>/ 10</small></span></button>
+          <button class="public-tab" type="button" data-public-tab="saber"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2Z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7Z"/></svg><span>Saber <small>/ 45</small></span></button>
+          <button class="public-tab" type="button" data-public-tab="hacer"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5-5L7 4l5 5 2.7-2.7Z"/><path d="m5 7-3 3 12 12 3-3L5 7ZM16 13l5-5M18 15l4-4"/></svg><span>Hacer <small>/ 40</small></span></button>
+          <button class="public-tab" type="button" data-public-tab="decidir"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M8.5 14.5A7 7 0 1 1 15.5 14.5C14.6 15.2 14 16 14 17h-4c0-1-.6-1.8-1.5-2.5Z"/></svg><span>Autoevaluacion <small>/ 5</small></span></button>
+          <button class="public-tab" type="button" data-public-tab="final"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M8.2 13 7 22l5-3 5 3-1.2-9"/><path d="m10 8 1.3 1.3L14 6.5"/></svg><span>Nota final</span></button>
+        </div>
+        <div class="public-tab-panel active" data-public-panel="ser">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nro.</th><th>Registro</th><th>Valor</th></tr></thead>
+              <tbody id="serBody"></tbody>
+            </table>
+          </div>
+          <p id="serTotal" class="public-dimension-total"></p>
+        </div>
+        <div class="public-tab-panel" data-public-panel="saber">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nro.</th><th>Registro</th><th>Valor</th></tr></thead>
+              <tbody id="saberBody"></tbody>
+            </table>
+          </div>
+          <p id="saberTotal" class="public-dimension-total"></p>
+        </div>
+        <div class="public-tab-panel" data-public-panel="hacer">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nro.</th><th>Registro</th><th>Valor</th></tr></thead>
+              <tbody id="hacerBody"></tbody>
+            </table>
+          </div>
+          <p id="hacerTotal" class="public-dimension-total"></p>
+        </div>
+        <div class="public-tab-panel" data-public-panel="decidir">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nro.</th><th>Registro</th><th>Valor</th></tr></thead>
+              <tbody id="decidirBody"></tbody>
+            </table>
+          </div>
+          <p id="decidirTotal" class="public-dimension-total"></p>
+        </div>
+        <div class="public-tab-panel" data-public-panel="final">
+          <div id="finalSummary" class="final-summary"></div>
+        </div>
+        <p id="observation" class="observation"></p>
+        <p id="lastUpdate" class="last-update"></p>
+        <button id="newConsultBtn" class="secondary-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Salir</button>
+      </section>
+    </section>
+  </main>
+
+  <footer class="public-footer">
+    <span id="footerText">Sistema academico institucional</span>
+  </footer>
+</body>
+</html>
