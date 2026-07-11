@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbwmaaPp9uKbAKpA1UxCnfV9c2ZXXxwtYjJ4h38daO8GucRQ6wsL5J37U4QDzVfKo1Y/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwg7EpKqyjRhIO2ixrG255JAaFN5P7U8la7Tovgb67cEFsZiYtK5XGIV3pAYwyjUBBq/exec";
 const API_TIMEOUT = 20000;
 const DEFAULT_LOGO = "assets/img/logo.png";
 const DIMENSION_WEIGHTS = { Ser: 10, Saber: 45, Hacer: 40, Decidir: 5 };

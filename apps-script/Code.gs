@@ -8,7 +8,7 @@ const DASHBOARD_BACKUP_LIMIT = 30;
 const ACADEMIC_RECORDS_MIGRATION_KEY = "ACADEMIC_RECORDS_MIGRATED_V1";
 const PUBLIC_STUDENTS_CACHE_SECONDS = 1800;
 const PUBLIC_RESULT_CACHE_SECONDS = 300;
-const PUBLIC_CACHE_VERSION = "v2";
+const PUBLIC_CACHE_VERSION = "v3";
 const SHEETS = {
   students: "Estudiantes",
   grades: "Notas",
@@ -891,7 +891,7 @@ function buildWorkbookGrades(ss, student, trimester) {
   const trimesterSheet = ss.getSheetByName(String(trimester || "1") + "TRIM");
   if (!trimesterSheet) return [];
   const rows = trimesterSheet.getRange(15, 1, 40, 46).getDisplayValues();
-  const row = rows.find((values) => normalize(values[1]) === normalize(student.Nombre));
+  const row = findWorkbookStudentRow(rows, student.Nombre, 1);
   if (!row) return [];
   const finalGrade = publicNumber(row[44]);
   const ser = publicNumber(row[15]);
@@ -1053,7 +1053,7 @@ function buildWorkbookAttendanceItems(ss, student, trimester) {
   if (!listSheet) return [];
   const lastColumn = Math.min(Math.max(listSheet.getLastColumn(), 57), listSheet.getMaxColumns());
   const rows = listSheet.getRange(12, 1, 43, lastColumn).getDisplayValues();
-  const row = rows.find((values) => normalize(values[1]) === normalize(student.Nombre));
+  const row = findWorkbookStudentRow(rows, student.Nombre, 1);
   if (!row) return [];
   const summary = {
     asistencia: publicNumber(row[50]),
@@ -1253,6 +1253,30 @@ function normalize(value) {
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function findWorkbookStudentRow(rows, studentName, nameColumn) {
+  const expected = normalizePersonName(studentName);
+  const exact = rows.find((values) => normalizePersonName(values[nameColumn]) === expected);
+  if (exact) return exact;
+
+  // Algunos cuadernos incluyen un nombre adicional que no figura en la hoja
+  // Estudiantes. Aceptamos esa diferencia solo si hay una unica fila compatible.
+  const compatible = rows.filter((values) => areCompatiblePersonNames(values[nameColumn], studentName));
+  return compatible.length === 1 ? compatible[0] : null;
+}
+
+function areCompatiblePersonNames(left, right) {
+  const leftWords = normalizePersonName(left).split(" ").filter(Boolean);
+  const rightWords = normalizePersonName(right).split(" ").filter(Boolean);
+  const shorter = leftWords.length <= rightWords.length ? leftWords : rightWords;
+  const longer = leftWords.length <= rightWords.length ? rightWords : leftWords;
+  if (shorter.length < 3 || shorter.length === longer.length) return false;
+  return shorter.every((word) => longer.indexOf(word) !== -1);
+}
+
+function normalizePersonName(value) {
+  return normalize(value).replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function isSha256Hash(value) {
