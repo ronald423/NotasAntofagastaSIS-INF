@@ -66,16 +66,12 @@ body {
 h1, h2, p { margin-top: 0; }
 h1 { margin-bottom: 8px; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -.035em; line-height: 1.05; }
 .school-name { display: grid; gap: 2px; }
-.school-name-prefix { display: flex; align-items: center; gap: 7px; color: #334155; font-size: .46em; font-weight: 750; letter-spacing: .055em; text-transform: uppercase; }
-.school-name-prefix svg { width: 1.25em; height: 1.25em; color: var(--secondary); stroke-width: 2; }
+.school-name-prefix { color: #334155; font-size: .46em; font-weight: 750; letter-spacing: .055em; text-transform: uppercase; }
 .school-name-main { color: var(--text); }
 .welcome-message { display: inline-flex; align-items: center; gap: 10px; margin-top: 5px; padding: 8px 12px 8px 9px; border: 1px solid #dbeafe; border-radius: 13px; background: linear-gradient(135deg, #eff6ff, #f0fdfa); color: var(--muted); }
-.welcome-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 7px 15px rgba(29, 78, 216, .18); }
-.welcome-icon svg { width: 18px; height: 18px; }
 .welcome-copy { display: grid; gap: 1px; text-align: left; }
 .welcome-title { color: #1e3a8a; font-size: .88rem; font-weight: 800; }
-.welcome-subtitle { display: flex; align-items: center; gap: 5px; font-size: .76rem; font-weight: 650; }
-.welcome-subtitle svg { width: 14px; height: 14px; color: var(--secondary); stroke-width: 2; }
+.welcome-subtitle { font-size: .76rem; font-weight: 650; }
 .secure-chip { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border-radius: 999px; color: #047857; background: #ecfdf5; border: 1px solid #bbf7d0; font-size: .78rem; font-weight: 800; white-space: nowrap; }
 .secure-chip svg { width: 17px; height: 17px; }
 
@@ -360,7 +356,6 @@ tbody tr:hover td { background: #f8fbff; }
   .brand, .result-head { flex-direction: column; align-items: stretch; }
   .brand { text-align: center; }
   .brand-logo-wrap { margin: 0 auto; }
-  .school-name-prefix { justify-content: center; }
   .welcome-message { align-self: center; }
   .secure-chip { align-self: center; }
   .form-stack { grid-template-columns: 1fr; padding: 16px; }
