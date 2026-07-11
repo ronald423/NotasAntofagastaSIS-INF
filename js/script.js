@@ -75,14 +75,31 @@ function applyConfig(config) {
   const root = document.documentElement;
   if (config.color_principal) root.style.setProperty("--primary", config.color_principal);
   if (config.color_secundario) root.style.setProperty("--secondary", config.color_secundario);
-  $("#schoolName").textContent = config.nombre_colegio || "Unidad Educativa";
+  const schoolLines = configLines(config.nombre_colegio, ["Unidad Educativa", "T.H. Antofagasta"]);
+  const schoolPrefix = schoolLines.length > 1 ? schoolLines[0] : "Unidad Educativa";
+  const schoolMain = schoolLines.length > 1 ? schoolLines[1] : schoolLines[0];
+  $("#schoolName").innerHTML = `<span class="school-name-prefix"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-6 9 6"/><path d="M5 9v10h14V9M9 19v-6h6v6"/><path d="M3 21h18"/></svg>${escapeHtml(schoolPrefix)}</span><span class="school-name-main">${escapeHtml(schoolMain)}</span>`;
   $("#gestion").textContent = config.gestion || "Gestion academica";
-  $("#welcomeText").textContent = config.mensaje_bienvenida || "Consulta segura de notas y practicas.";
-  $("#footerText").textContent = config.footer_texto || "Sistema academico institucional";
+  const welcomeLines = configLines(config.mensaje_bienvenida, ["Consulta de notas", "Sistemas Informáticos"]);
+  $("#welcomeText .welcome-title").textContent = welcomeLines[0];
+  $("#welcomeText .welcome-subtitle").innerHTML = `${escapeHtml(welcomeLines[1] || "Sistemas Informáticos")}<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`;
+  const footerLines = configLines(config.footer_texto, ["Sistema académico institucional", "Developed by Ronald G."]);
+  $("#footerText .footer-title").textContent = footerLines[0];
+  const credit = footerLines[1] || "Developed by Ronald G.";
+  $("#footerText .footer-credit").innerHTML = escapeHtml(credit).replace(/(Ronald G\.?)/i, "<strong>$1</strong>");
   if (isValidImageUrl(config.logo_url) && config.logo_url !== $("#logo").src) {
     $("#logo").src = config.logo_url;
   }
-  document.title = `${$("#schoolName").textContent} | Consulta de notas`;
+  document.title = `${schoolLines.join(" ")} | Consulta de notas`;
+}
+
+function configLines(value, fallback) {
+  const lines = String(value || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  return lines.length ? lines : fallback;
 }
 
 async function consultGrades(event) {

@@ -17,8 +17,19 @@
         </div>
         <div class="brand-copy">
           <p id="gestion" class="eyebrow">Gestion academica</p>
-          <h1 id="schoolName">Unidad Educativa</h1>
-          <p id="welcomeText">Consulta segura de notas y practicas.</p>
+          <h1 id="schoolName" class="school-name">
+            <span class="school-name-prefix"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-6 9 6"/><path d="M5 9v10h14V9M9 19v-6h6v6"/><path d="M3 21h18"/></svg>Unidad Educativa</span>
+            <span class="school-name-main">T.H. Antofagasta</span>
+          </h1>
+          <div id="welcomeText" class="welcome-message">
+            <span class="welcome-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M8 7h8M8 11h6"/></svg>
+            </span>
+            <span class="welcome-copy">
+              <span class="welcome-title">Consulta de notas</span>
+              <span class="welcome-subtitle">Sistemas Informáticos<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+            </span>
+          </div>
         </div>
         <div class="secure-chip" title="Consulta protegida">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 2.9 8.4 7 10 4.1-1.6 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
@@ -135,7 +146,13 @@
   </main>
 
   <footer class="public-footer">
-    <span id="footerText">Sistema academico institucional</span>
+    <span class="footer-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M5 11v5.5C7 18.8 9.3 20 12 20s5-1.2 7-3.5V11"/><path d="M21 8v6"/></svg>
+    </span>
+    <span id="footerText" class="footer-copy">
+      <span class="footer-title">Sistema académico institucional</span>
+      <span class="footer-credit">Desarrollado por <strong>Ronald G.</strong></span>
+    </span>
   </footer>
 </body>
 </html>
